@@ -97,7 +97,7 @@ export default function HomePage() {
             {schools.map((school) => (
               <Link
                 key={school.school_id}
-                href={`/${school.slug}`}
+                href={`/${school.slug}/practice`}
                 className="bg-white border-[1.5px] border-brand-border rounded-[10px] py-[14px] px-3 text-center text-[14px] font-semibold text-[#1e293b] transition-colors duration-150 hover:border-brand hover:text-brand flex items-center justify-center"
               >
                 {school.display_name}
