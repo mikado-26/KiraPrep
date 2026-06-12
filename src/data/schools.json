@@ -1,0 +1,92 @@
+[
+  {
+    "school_id": "insead",
+    "display_name": "INSEAD",
+    "slug": "insead-kira-questions",
+    "batch_size": 4,
+    "prep_sec": 30,
+    "answer_sec": 90,
+    "active": "yes"
+  },
+  {
+    "school_id": "oxford-said",
+    "display_name": "Oxford Said",
+    "slug": "oxford-said-kira-questions",
+    "batch_size": 4,
+    "prep_sec": 30,
+    "answer_sec": 90,
+    "active": "yes"
+  },
+  {
+    "school_id": "foster",
+    "display_name": "Foster",
+    "slug": "foster-kira-questions",
+    "batch_size": 2,
+    "prep_sec": 30,
+    "answer_sec": 90,
+    "active": "yes"
+  },
+  {
+    "school_id": "iese",
+    "display_name": "IESE",
+    "slug": "iese-kira-questions",
+    "batch_size": 4,
+    "prep_sec": 60,
+    "answer_sec": 90,
+    "active": "yes"
+  },
+  {
+    "school_id": "kellogg",
+    "display_name": "Kellogg",
+    "slug": "kellogg-kira-questions",
+    "batch_size": 3,
+    "prep_sec": 60,
+    "answer_sec": 90,
+    "active": "yes"
+  },
+  {
+    "school_id": "mit",
+    "display_name": "MIT Sloan",
+    "slug": "mit-sloan-kira-questions",
+    "batch_size": 1,
+    "prep_sec": 10,
+    "answer_sec": 60,
+    "active": "yes"
+  },
+  {
+    "school_id": "yale",
+    "display_name": "Yale SOM",
+    "slug": "yale-som-kira-questions",
+    "batch_size": 3,
+    "prep_sec": 30,
+    "answer_sec": 90,
+    "active": "yes"
+  },
+  {
+    "school_id": "haas",
+    "display_name": "Haas",
+    "slug": "haas-kira-questions",
+    "batch_size": 5,
+    "prep_sec": 45,
+    "answer_sec": 180,
+    "active": "yes"
+  },
+  {
+    "school_id": "mccombs",
+    "display_name": "McCombs",
+    "slug": "mccombs-kira-questions",
+    "batch_size": 5,
+    "prep_sec": 30,
+    "answer_sec": 180,
+    "active": "yes"
+  },
+  {
+    "school_id": "lbs",
+    "display_name": "LBS",
+    "slug": "lbs-kira-questions",
+    "batch_size": 2,
+    "prep_sec": 45,
+    "answer_sec": 90,
+    "active": "yes"
+  }
+]
