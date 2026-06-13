@@ -93,11 +93,11 @@ export default function HomePage() {
         {/* Centered heading */}
         <div className="text-center mb-8">
           <h1 className="font-[family-name:var(--font-dm-serif)] text-[44px] leading-[1.08] text-[#0f172a] mb-3 tracking-[-1px]">
-            Practice <span className="text-brand italic">REAL</span> Kira
+            Practice <span className="text-brand">REAL</span> Kira
             Interview
           </h1>
           <p className="text-[15px] text-[#64748b] mb-[5px]">
-            The only time schools see you as a &ldquo;person&rdquo; before the
+            Kira Interview is the only time schools see you as a &ldquo;person&rdquo; before the
             interview round.
           </p>
           <p className="text-[14px] font-medium text-brand">
@@ -119,7 +119,7 @@ export default function HomePage() {
                 </div>
                 <div>
                   <strong className="block text-[16px] font-semibold text-[#0f172a] mb-1">
-                    Real questions from top schools
+                    Real Kira questions from top schools
                   </strong>
                   <span className="text-[14px] text-[#64748b] leading-[1.5]">
                     Updated every application cycle.
@@ -132,7 +132,7 @@ export default function HomePage() {
                 </div>
                 <div>
                   <strong className="block text-[16px] font-semibold text-[#0f172a] mb-1">
-                    Real Kira-style experience
+                    Real Kira-style interview experience
                   </strong>
                   <span className="text-[14px] text-[#64748b] leading-[1.5]">
                     Same countdown, camera pressure, and format.
@@ -179,8 +179,8 @@ export default function HomePage() {
             {
               label: "What is a Kira Assessment?",
               heading: "1 shot. 0 retry. ~2 minutes each answer.",
-              sub: "Kira Assessment is part of your MBA application — a timed video interview sent after you pay the application fee. You have around 24 hours to complete it. 3–5 questions appear on screen and you only get one take to answer each. Schools want to see how you think on your feet, your communication, and your personality beyond written essays.",
-              kicker: "Often described as the most nerve-wracking part of the MBA application. One shot. No second take.",
+              sub: "Kira Interview is a crucial part of your MBA application where you get one chance to show as a “person” with timed video interviews beyond written essays. You have to finish around 24H after receiving the Kira interview link from schools. And have only 1 take to answer each question when the camera is on. Schools want to see how you think on your feet, your communication, and your personality.",
+              kicker: "",
             },
             {
               label: "What does KiraPrep offer?",
@@ -201,7 +201,6 @@ export default function HomePage() {
               heading={item.heading}
               sub={item.sub}
               kicker={item.kicker}
-              collapsible={i === 0}
             />
           ))}
         </div>
@@ -214,14 +213,6 @@ export default function HomePage() {
           <span className="font-[family-name:var(--font-dm-serif)] text-[15px] text-[#1a1a1a]">
             kiraprep<span className="text-brand">.com</span>
           </span>
-          <div className="flex gap-6">
-            <Link href="/tips" className="text-[13px] text-[#94a3b8] hover:text-[#64748b]">
-              Tips
-            </Link>
-            <Link href="/pricing" className="text-[13px] text-[#94a3b8] hover:text-[#64748b]">
-              Pricing
-            </Link>
-          </div>
         </div>
       </footer>
     </main>

@@ -49,11 +49,17 @@ export default function NavBar({ maxWidth = 920 }: { maxWidth?: number }) {
       >
         <Link
           href="/"
-          className="font-[family-name:var(--font-dm-serif)] text-[17px] text-[#1a1a1a]"
+          className="font-[family-name:var(--font-dm-serif)] text-[18px] text-[#1a1a1a]"
         >
-          kiraprep<span className="text-brand">.io</span>
+          Kira<span className="text-brand">Prep.com</span>
         </Link>
         <div className="flex items-center gap-[10px]">
+          <Link
+            href="/tips"
+            className="text-[14px] text-[#475569] hover:text-[#334155] font-medium mr-2"
+          >
+            Kira Interview Tips
+          </Link>
           {mounted && user ? (
             <>
               <div className="flex items-center gap-2 bg-[#f8fafc] border-[1.5px] border-[#e2e8f0] rounded-[20px] py-1 pl-[5px] pr-[14px]">
@@ -87,12 +93,6 @@ export default function NavBar({ maxWidth = 920 }: { maxWidth?: number }) {
               >
                 Log in
               </button>
-              <button
-                onClick={handleSignIn}
-                className="bg-brand text-white text-[13px] font-semibold py-[8px] px-[20px] rounded-lg border-none cursor-pointer"
-              >
-                Get started
-              </button>
             </>
           ) : null}
         </div>
@@ -100,3 +100,4 @@ export default function NavBar({ maxWidth = 920 }: { maxWidth?: number }) {
     </nav>
   );
 }
+
