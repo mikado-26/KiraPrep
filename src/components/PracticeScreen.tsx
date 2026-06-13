@@ -57,17 +57,25 @@ export default function PracticeScreen({
   const [totalSecs, setTotalSecs] = useState(0);
   const [questionsCompleted, setQuestionsCompleted] = useState(0);
 
-  // Playback sim
-  const [playbackPct, setPlaybackPct] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const playbackRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Playback
+  const [recordedUrl, setRecordedUrl] = useState<string | null>(null);
+  const playbackVideoRef = useRef<HTMLVideoElement>(null);
 
-  // Camera
+  // Camera / recorder
   const videoRef = useRef<HTMLVideoElement>(null);
   const [camError, setCamError] = useState(false);
   const streamRef = useRef<MediaStream | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Revoke blob URL on unmount to free memory
+  useEffect(() => {
+    return () => {
+      if (recordedUrl) URL.revokeObjectURL(recordedUrl);
+    };
+  }, [recordedUrl]);
 
   // Load persisted state + auth
   useEffect(() => {
@@ -105,7 +113,7 @@ export default function PracticeScreen({
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: true,
-          audio: false,
+          audio: true,
         });
         streamRef.current = stream;
         if (videoRef.current) {
@@ -180,13 +188,39 @@ export default function PracticeScreen({
     setAppState("recording");
     setTotalSecs(school.answer_sec);
     setTimeLeft(school.answer_sec);
+
+    // Start recording
+    if (streamRef.current) {
+      chunksRef.current = [];
+      const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9,opus")
+        ? "video/webm;codecs=vp9,opus"
+        : MediaRecorder.isTypeSupported("video/webm")
+        ? "video/webm"
+        : "";
+      const recorder = new MediaRecorder(streamRef.current, mimeType ? { mimeType } : undefined);
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunksRef.current.push(e.data);
+      };
+      recorder.start(100); // collect in 100ms chunks
+      mediaRecorderRef.current = recorder;
+    }
   }
 
   function goSubmitted() {
     if (timerRef.current) clearInterval(timerRef.current);
+
+    // Stop recording and build blob URL
+    const recorder = mediaRecorderRef.current;
+    if (recorder && recorder.state !== "inactive") {
+      recorder.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: recorder.mimeType || "video/webm" });
+        const url = URL.createObjectURL(blob);
+        setRecordedUrl(url);
+      };
+      recorder.stop();
+    }
+
     setAppState("submitted");
-    setPlaybackPct(0);
-    setIsPlaying(false);
 
     // Increment questions used
     const newUsed = questionsCompleted + 1;
@@ -237,33 +271,14 @@ export default function PracticeScreen({
   }
 
   function togglePlayback() {
-    if (isPlaying) {
-      if (playbackRef.current) clearInterval(playbackRef.current);
-      playbackRef.current = null;
-      setIsPlaying(false);
-      return;
+    const vid = playbackVideoRef.current;
+    if (!vid) return;
+    if (vid.paused) {
+      vid.play();
+    } else {
+      vid.pause();
     }
-    setIsPlaying(true);
-    setPlaybackPct(0);
-    playbackRef.current = setInterval(() => {
-      setPlaybackPct((p) => {
-        if (p >= 100) {
-          if (playbackRef.current) clearInterval(playbackRef.current);
-          playbackRef.current = null;
-          setIsPlaying(false);
-          return 100;
-        }
-        return p + 1.2;
-      });
-    }, 60);
   }
-
-  // Cleanup playback interval
-  useEffect(() => {
-    return () => {
-      if (playbackRef.current) clearInterval(playbackRef.current);
-    };
-  }, []);
 
   const progressPct =
     totalSecs > 0 ? ((totalSecs - timeLeft) / totalSecs) * 100 : 0;
@@ -491,37 +506,45 @@ export default function PracticeScreen({
                 </svg>
               </div>
               <div className="text-[20px] font-bold text-[#0f172a]">Response submitted</div>
-              <div className="text-[14px] text-[#64748b] max-w-[340px] leading-[1.6]">
-                You can rewatch your answer. In the real Kira assessment, playback is not available.
+              <div className="text-[14px] text-[#64748b] max-w-[380px] leading-[1.6]">
+                Click play to rewatch your response, then ask yourself:
               </div>
-              {/* Playback bar */}
-              <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-[10px] py-[10px] px-4 flex items-center gap-[10px] w-full max-w-[380px]">
-                <button
-                  onClick={togglePlayback}
-                  className="w-[30px] h-[30px] rounded-full bg-brand border-none cursor-pointer flex items-center justify-center shrink-0"
-                >
-                  {isPlaying ? (
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="#fff" stroke="none">
-                      <rect x="6" y="4" width="4" height="16" /><rect x="14" y="4" width="4" height="16" />
-                    </svg>
-                  ) : (
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="#fff" stroke="none">
-                      <polygon points="5,3 19,12 5,21" />
-                    </svg>
-                  )}
-                </button>
-                <div className="flex-1 h-[3px] bg-[#e2e8f0] rounded-sm">
-                  <div
-                    className="h-full bg-brand rounded-sm"
-                    style={{ width: `${Math.min(playbackPct, 100)}%` }}
+
+              {/* Self-review checklist */}
+              <ul className="text-left text-[13px] text-[#475569] max-w-[380px] w-full space-y-[6px] leading-[1.6]">
+                <li className="flex items-start gap-2">
+                  <span className="mt-[3px] text-brand">✓</span>
+                  Did you sound confident and natural?
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-[3px] text-brand">✓</span>
+                  Did you smile?
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-[3px] text-brand">✓</span>
+                  Did you look at the camera, not the screen?
+                </li>
+              </ul>
+
+              {/* Video playback */}
+              {recordedUrl ? (
+                <div className="w-full max-w-[440px] rounded-[10px] overflow-hidden border border-[#e2e8f0] bg-black">
+                  <video
+                    ref={playbackVideoRef}
+                    src={recordedUrl}
+                    controls
+                    playsInline
+                    className="w-full"
+                    style={{ transform: "scaleX(-1)" }}
                   />
                 </div>
-                <div className="text-[11px] text-[#94a3b8] whitespace-nowrap">
-                  0:43 / {fmtLabel(school.answer_sec)}
-                </div>
-              </div>
-              <div className="text-[12px] text-[#94a3b8] italic">
-                Take a breath before your next question.
+              ) : (
+                <div className="text-[13px] text-[#94a3b8]">Processing your recording…</div>
+              )}
+
+              {/* Note */}
+              <div className="text-[12px] text-[#94a3b8] max-w-[400px] leading-[1.6] text-center">
+                <span className="font-semibold text-[#64748b]">Note:</span> In the real Kira assessment, playback is not available. The next question will only appear when you click Next question.
               </div>
             </div>
           )}
