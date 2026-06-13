@@ -151,16 +151,21 @@ export default function HomePage() {
       <section id="schools" className="bg-brand-light py-6 px-8 pb-7">
         <div className="max-w-[920px] mx-auto">
           <h2 className="font-[family-name:var(--font-dm-serif)] text-[18px] text-[#0f172a] mb-[14px]">
-            Pick your school
+            MBA Programs
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-[10px]">
             {schools.map((school) => (
               <Link
                 key={school.school_id}
                 href={`/${school.slug}/practice`}
-                className="bg-white border-[1.5px] border-brand-border rounded-[10px] py-[14px] px-3 text-center text-[14px] font-semibold text-[#1e293b] transition-colors duration-150 hover:border-brand hover:text-brand flex items-center justify-center"
+                className="bg-white border-[1.5px] border-brand-border rounded-[10px] py-[14px] px-3 text-center transition-colors duration-150 hover:border-brand group flex flex-col items-center gap-[3px]"
               >
-                {school.display_name}
+                <span className="text-[14px] font-semibold text-[#1e293b] group-hover:text-brand transition-colors">
+                  {school.display_name}
+                </span>
+                <span className="text-[11px] text-[#94a3b8]">
+                  Kira Questions
+                </span>
               </Link>
             ))}
           </div>
@@ -202,38 +207,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* SEO School Links */}
-      <section className="border-t border-[#e2e8f0] bg-brand-light px-8 py-8">
-        <div className="max-w-[920px] mx-auto">
-          <p className="text-[12px] font-semibold uppercase tracking-[0.1em] text-[#94a3b8] mb-4">
-            Practice by school
-          </p>
-          <div className="flex flex-wrap gap-[10px]">
-            {[
-              { label: "INSEAD Kira Questions", slug: "insead" },
-              { label: "Kellogg Kira Questions", slug: "kellogg" },
-              { label: "Harvard Kira Questions", slug: "harvard" },
-              { label: "Oxford Saïd Kira Questions", slug: "oxford-said" },
-              { label: "MIT Sloan Kira Questions", slug: "mit-sloan" },
-              { label: "LBS Kira Questions", slug: "lbs" },
-              { label: "Foster Kira Questions", slug: "foster" },
-              { label: "Yale SOM Kira Questions", slug: "yale-som" },
-              { label: "Haas Kira Questions", slug: "haas" },
-              { label: "McCombs Kira Questions", slug: "mccombs" },
-              { label: "IESE Kira Questions", slug: "iese" },
-            ].map((s) => (
-              <Link
-                key={s.slug}
-                href={`/${s.slug}/practice`}
-                className="inline-flex items-center gap-[6px] bg-white border-[1.5px] border-brand-border text-[13px] font-medium text-[#334155] px-4 py-[7px] rounded-full hover:border-brand hover:text-brand transition-all duration-150"
-              >
-                {s.label}
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Footer */}
       <footer className="border-t border-[#e2e8f0] py-6 px-8">
