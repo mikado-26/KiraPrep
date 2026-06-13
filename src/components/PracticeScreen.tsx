@@ -506,10 +506,6 @@ export default function PracticeScreen({
                 </svg>
               </div>
               <div className="text-[20px] font-bold text-[#0f172a]">Response submitted</div>
-              <div className="text-[14px] text-[#64748b] max-w-[380px] leading-[1.6]">
-                Click play to rewatch your response, then ask yourself:
-              </div>
-
               {/* Self-review checklist */}
               <ul className="text-left text-[13px] text-[#475569] max-w-[380px] w-full space-y-[6px] leading-[1.6]">
                 <li className="flex items-start gap-2">
@@ -526,6 +522,11 @@ export default function PracticeScreen({
                 </li>
               </ul>
 
+              {/* Note */}
+              <div className="text-[12px] text-[#94a3b8] max-w-[400px] leading-[1.6] text-center">
+                <span className="font-semibold text-[#64748b]">Note:</span> In the real Kira assessment, playback is not available. The next question will only appear when you click Next question.
+              </div>
+
               {/* Video playback */}
               {recordedUrl ? (
                 <div className="w-full max-w-[440px] rounded-[10px] overflow-hidden border border-[#e2e8f0] bg-black">
@@ -535,17 +536,11 @@ export default function PracticeScreen({
                     controls
                     playsInline
                     className="w-full"
-                    style={{ transform: "scaleX(-1)" }}
                   />
                 </div>
               ) : (
                 <div className="text-[13px] text-[#94a3b8]">Processing your recording…</div>
               )}
-
-              {/* Note */}
-              <div className="text-[12px] text-[#94a3b8] max-w-[400px] leading-[1.6] text-center">
-                <span className="font-semibold text-[#64748b]">Note:</span> In the real Kira assessment, playback is not available. The next question will only appear when you click Next question.
-              </div>
             </div>
           )}
         </div>
