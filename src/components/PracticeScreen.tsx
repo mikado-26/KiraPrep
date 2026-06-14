@@ -19,6 +19,7 @@ interface SchoolInfo {
 interface QuestionItem {
   id: number;
   text: string;
+  year?: number;
 }
 
 type AppState = "waiting" | "prep" | "recording" | "submitted" | "endofset";
@@ -80,6 +81,13 @@ export default function PracticeScreen({
       if (recordedUrl) URL.revokeObjectURL(recordedUrl);
     };
   }, [recordedUrl]);
+
+  // Re-attach camera stream whenever the video element re-mounts (e.g. after submitted screen)
+  useEffect(() => {
+    if (appState !== "submitted" && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+    }
+  }, [appState]);
 
   // Load persisted state + auth
   useEffect(() => {
@@ -429,21 +437,37 @@ export default function PracticeScreen({
               <div className="text-[11px] text-[#94a3b8] mt-[3px] uppercase tracking-[0.06em]">Completed</div>
             </div>
           </div>
+          {/* Exhausted question bank notice */}
+          {willWrap && (
+            <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl px-6 py-4 max-w-[360px] text-center">
+              <div className="text-[14px] font-semibold text-[#0f172a] mb-1">You've practiced all available questions!</div>
+              <div className="text-[13px] text-[#64748b] leading-[1.6]">
+                Great dedication — practice makes perfect. You can repeat this set while we add more questions to the bank.
+              </div>
+            </div>
+          )}
+
           {/* Buttons */}
           <div className="flex flex-col gap-[10px] w-full max-w-[360px]">
-            <button
-              onClick={newSet}
-              className="bg-brand text-white text-[15px] font-semibold py-[14px] px-6 rounded-[10px] border-none cursor-pointer flex items-center justify-center gap-2 hover:bg-[#1d4ed8] transition-colors"
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 2v6h-6" /><path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
-                <path d="M3 22v-6h6" /><path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
-              </svg>
-              Practice new set
-            </button>
+            {!willWrap && (
+              <button
+                onClick={newSet}
+                className="bg-brand text-white text-[15px] font-semibold py-[14px] px-6 rounded-[10px] border-none cursor-pointer flex items-center justify-center gap-2 hover:bg-[#1d4ed8] transition-colors"
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 2v6h-6" /><path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
+                  <path d="M3 22v-6h6" /><path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
+                </svg>
+                Practice new set
+              </button>
+            )}
             <button
               onClick={repeatSet}
-              className="bg-white border-[1.5px] border-brand-border text-brand text-[15px] font-semibold py-[14px] px-6 rounded-[10px] cursor-pointer flex items-center justify-center gap-2 hover:bg-brand-light transition-colors"
+              className={`text-[15px] font-semibold py-[14px] px-6 rounded-[10px] cursor-pointer flex items-center justify-center gap-2 transition-colors ${
+                willWrap
+                  ? "bg-brand text-white border-none hover:bg-[#1d4ed8]"
+                  : "bg-white border-[1.5px] border-brand-border text-brand hover:bg-brand-light"
+              }`}
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="m17 2 4 4-4 4" /><path d="M3 11v-1a4 4 0 0 1 4-4h14" />
@@ -452,11 +476,6 @@ export default function PracticeScreen({
               Practice this set again
             </button>
           </div>
-          {willWrap && (
-            <div className="text-[12px] text-[#94a3b8] italic">
-              Next set loops back to Question 1 ({questions.length} questions total).
-            </div>
-          )}
         </div>
       </div>
     );
@@ -572,8 +591,15 @@ export default function PracticeScreen({
               {/* Question text (shown during prep + recording) */}
               {(appState === "prep" || appState === "recording") && currentQuestion && (
                 <div className="pt-[14px]">
-                  <p className="text-[15px] text-[#1e293b] leading-[1.65]">
-                    <strong className="text-[#64748b] font-medium">Q{currentQ + 1}.</strong>{" "}
+                  <p className="text-[15px] text-[#1e293b] leading-[1.65] flex items-baseline gap-2 flex-wrap">
+                    <span className="flex items-center gap-[6px] shrink-0">
+                      <strong className="text-[#64748b] font-medium">Q{currentQ + 1}.</strong>
+                      {currentQuestion.year && (
+                        <span className="text-[11px] font-medium text-[#64748b] bg-[#f1f5f9] border border-[#e2e8f0] rounded px-[7px] py-[1px] leading-[1.6]">
+                          {currentQuestion.year} cycle
+                        </span>
+                      )}
+                    </span>
                     {currentQuestion.text}
                   </p>
                 </div>
@@ -610,15 +636,15 @@ export default function PracticeScreen({
                 <span className="font-semibold">Note:</span> In the real Kira assessment, playback is not available. The next question will only appear when you click Next question.
               </div>
 
-              {/* Video playback */}
+              {/* Video playback — same crop as live camera (16:9, object-cover) */}
               {recordedUrl ? (
-                <div className="w-full max-w-[440px] rounded-[10px] overflow-hidden border border-[#e2e8f0] bg-black">
+                <div className="w-full max-w-[440px] aspect-video rounded-[10px] overflow-hidden border border-[#e2e8f0] bg-black relative">
                   <video
                     ref={playbackVideoRef}
                     src={recordedUrl}
                     controls
                     playsInline
-                    className="w-full"
+                    className="absolute inset-0 w-full h-full object-cover"
                   />
                 </div>
               ) : (
