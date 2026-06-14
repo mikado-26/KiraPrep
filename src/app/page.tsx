@@ -56,6 +56,27 @@ const faqSchema = {
   ],
 };
 
+const faqItems = [
+  {
+    label: "What is a Kira Video Interview?",
+    heading: "1 shot. 0 retry.",
+    sub: "Since 2024, Kira Video Interview (video essay) has become a crucial part of your MBA application where you get one chance to show as a 'person' before the interview round. You receive a Kira link from the school, for each question, you have only 1-2 minutes to prepare - then the camera turns on and you have only 1 chance to answer with fixed time. Often described as the most nerve-wracking and stressful component of the MBA application.",
+    kicker: "",
+  },
+  {
+    label: "What does KiraPrep offer?",
+    heading: "Practice with real questions.",
+    sub: "Same countdown timer, camera format, and pressure as the actual Kira. So when it counts, you don't freeze.",
+    kicker: "",
+  },
+  {
+    label: "Where do the questions come from?",
+    heading: "Sourced from real applicants.",
+    sub: "Reddit, GMATClub, and applicant partners - reviewed and updated every application cycle.",
+    kicker: "",
+  },
+];
+
 function CheckIcon() {
   return (
     <svg
@@ -175,26 +196,7 @@ export default function HomePage() {
       {/* FAQ Section */}
       <section className="px-8 py-14 border-t border-[#e2e8f0]">
         <div className="max-w-[920px] mx-auto flex flex-col divide-y divide-[#e2e8f0]">
-          {[
-            {
-              label: “What is a Kira Video Interview?”,
-              heading: “1 shot. 0 retry.”,
-              sub: “Since 2024, Kira Video Interview (video essay) has become a crucial part of your MBA application where you get one chance to show as a “person” before the interview round. You receive a Kira link from the school, for each question, you have only 1–2 minutes to prepare — then the camera turns on and you have only 1 chance to answer with fixed time. Often described as the most nerve-wracking and stressful component of the MBA application.”,
-              kicker: "",
-            },
-            {
-              label: "What does KiraPrep offer?",
-              heading: "Practice with real questions.",
-              sub: "Same countdown timer, camera format, and pressure as the actual Kira. So when it counts, you don't freeze.",
-              kicker: "",
-            },
-            {
-              label: "Where do the questions come from?",
-              heading: "Sourced from real applicants.",
-              sub: "Reddit, GMATClub, and applicant partners — reviewed and updated every application cycle.",
-              kicker: "",
-            },
-          ].map((item, i) => (
+          {faqItems.map((item) => (
             <FAQItem
               key={item.label}
               label={item.label}
