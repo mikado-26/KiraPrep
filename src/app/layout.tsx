@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans, DM_Serif_Display } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import FeedbackButton from "@/components/FeedbackButton";
 
@@ -33,6 +34,18 @@ export default function RootLayout({
       className={`${dmSans.variable} ${dmSerif.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-white text-[#111] font-[family-name:var(--font-dm-sans)]">
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-2LYWW90RMY"
+          strategy="afterInteractive"
+        />
+        <Script id="ga4" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-2LYWW90RMY');
+          `}
+        </Script>
         {children}
         <FeedbackButton />
       </body>
