@@ -21,6 +21,9 @@ export const metadata: Metadata = {
   title: "KiraPrep — Practice MBA Kira Video Interviews",
   description:
     "Practice real MBA Kira video essay questions with timed practice mode. 194+ questions sourced from Reddit and MBA applicants for INSEAD, Kellogg, Oxford, and more.",
+  verification: {
+    google: "xZQP2JdzCIVla7hMYhoHaMOQJUqeq1zos6wneGFeid0",
+  },
 };
 
 export default function RootLayout({
