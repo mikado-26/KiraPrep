@@ -254,6 +254,17 @@ export default function PracticeScreen({
     const newUsed = questionsCompleted + 1;
     setQuestionsCompleted(newUsed);
     localStorage.setItem("kiraprep_questions_used", newUsed.toString());
+
+    // Track event in Supabase (fire and forget)
+    if (user && currentQuestion) {
+      const supabase = createClient();
+      supabase.from("practice_activities").insert({
+        user_id: user.id,
+        question_id: currentQuestion.id,
+        school_id: school.school_id,
+        practiced_at: new Date().toISOString(),
+      });
+    }
   }
 
   function goEndOfSet() {
