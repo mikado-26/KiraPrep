@@ -15,14 +15,14 @@ export default function FAQItem({ label, heading, sub, kicker, collapsible }: Pr
 
   return (
     <div className="py-6 flex flex-col gap-2">
-      <span className="text-[14px] font-semibold text-brand">{label}</span>
-      <h3 className="font-[family-name:var(--font-dm-serif)] text-[28px] text-[#0f172a] leading-[1.2]">
+      <span className="text-[19px] font-semibold text-brand">{label}</span>
+      <h3 className="font-[family-name:var(--font-dm-serif)] text-[24px] text-[#0f172a] leading-[1.2]">
         {heading}
       </h3>
 
       {collapsible ? (
         <>
-          <p className={`text-[14px] text-[#64748b] leading-[1.7] ${open ? "" : "line-clamp-2"}`}>
+          <p className={`text-[15px] text-[#334155] leading-[1.7] ${open ? "" : "line-clamp-2"}`}>
             {sub}{kicker ? " " + kicker : ""}
           </p>
           <button
@@ -34,8 +34,8 @@ export default function FAQItem({ label, heading, sub, kicker, collapsible }: Pr
         </>
       ) : (
         <>
-          <p className="text-[14px] text-[#64748b] leading-[1.7]">{sub}</p>
-          {kicker && <p className="text-[14px] text-[#64748b] leading-[1.7]">{kicker}</p>}
+          <p className="text-[15px] text-[#334155] leading-[1.7]">{sub}</p>
+          {kicker && <p className="text-[15px] text-[#334155] leading-[1.7]">{kicker}</p>}
         </>
       )}
     </div>

@@ -31,10 +31,10 @@ const faqSchema = {
   mainEntity: [
     {
       "@type": "Question",
-      name: "What is a Kira Assessment?",
+      name: "What is a Kira Video Interview?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "An on-demand video interview sent by your school after you submit your application. You have 24–36 hours to complete it. For each question, you get one take and 1–3 minutes to record your answer — no retries, no editing. The admissions team uses it to see how you think, communicate, and present yourself as a person.",
+        text: "Since 2024, Kira Video Interview (video essay) has become a crucial part of your MBA application where you get one chance to show as a person before the interview round. You receive a Kira link from the school, for each question, you have only 1–2 minutes to prepare — then the camera turns on and you have only 1 chance to answer with fixed time. Often described as the most nerve-wracking and stressful component of the MBA application.",
       },
     },
     {
@@ -177,9 +177,9 @@ export default function HomePage() {
         <div className="max-w-[920px] mx-auto flex flex-col divide-y divide-[#e2e8f0]">
           {[
             {
-              label: "What is a Kira Assessment?",
-              heading: "1 shot. 0 retry. ~2 minutes each answer.",
-              sub: "Kira Interview is a crucial part of your MBA application where you get one chance to show as a “person” with timed video interviews beyond written essays. You have to finish around 24H after receiving the Kira interview link from schools. And have only 1 take to answer each question when the camera is on. Schools want to see how you think on your feet, your communication, and your personality.",
+              label: “What is a Kira Video Interview?”,
+              heading: “1 shot. 0 retry.”,
+              sub: “Since 2024, Kira Video Interview (video essay) has become a crucial part of your MBA application where you get one chance to show as a “person” before the interview round. You receive a Kira link from the school, for each question, you have only 1–2 minutes to prepare — then the camera turns on and you have only 1 chance to answer with fixed time. Often described as the most nerve-wracking and stressful component of the MBA application.”,
               kicker: "",
             },
             {
