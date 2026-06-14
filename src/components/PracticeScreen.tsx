@@ -61,6 +61,10 @@ export default function PracticeScreen({
   const [recordedUrl, setRecordedUrl] = useState<string | null>(null);
   const playbackVideoRef = useRef<HTMLVideoElement>(null);
 
+  // Permissions
+  type PermState = "pending" | "granted" | "no-audio" | "denied";
+  const [permState, setPermState] = useState<PermState>("pending");
+
   // Camera / recorder
   const videoRef = useRef<HTMLVideoElement>(null);
   const [camError, setCamError] = useState(false);
@@ -111,15 +115,30 @@ export default function PracticeScreen({
 
     async function startCamera() {
       try {
+        // Request video + audio together — both are required
         const stream = await navigator.mediaDevices.getUserMedia({
           video: true,
           audio: true,
         });
+        const hasAudio = stream.getAudioTracks().length > 0;
+        if (!hasAudio) {
+          stream.getTracks().forEach((t) => t.stop());
+          setPermState("no-audio");
+          setCamError(true);
+          return;
+        }
+        setPermState("granted");
         streamRef.current = stream;
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
-      } catch {
+      } catch (err: unknown) {
+        const name = err instanceof Error ? err.name : "";
+        if (name === "NotAllowedError" || name === "PermissionDeniedError") {
+          setPermState("denied");
+        } else {
+          setPermState("no-audio");
+        }
         setCamError(true);
       }
     }
@@ -307,6 +326,69 @@ export default function PracticeScreen({
   // Paywall
   if (showPaywall) {
     return <Paywall schoolSlug={school.slug} />;
+  }
+
+  // Permission gate — camera and/or microphone not granted
+  if (permState === "pending" || permState === "denied" || permState === "no-audio") {
+    const isDenied = permState === "denied" || permState === "no-audio";
+    return (
+      <div className="min-h-screen bg-white">
+        <NavBar maxWidth={1080} />
+        <div className="max-w-[480px] mx-auto px-8 py-24 flex flex-col items-center gap-5 text-center">
+          {/* Icon */}
+          <div className="w-[64px] h-[64px] rounded-full bg-[#fef9ec] border border-[#fde68a] flex items-center justify-center">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3Z" />
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+              <line x1="12" y1="19" x2="12" y2="22" />
+            </svg>
+          </div>
+
+          <div className="text-[22px] font-bold text-[#0f172a]">
+            Camera & microphone required
+          </div>
+
+          <div className="text-[14px] text-[#475569] leading-[1.7] max-w-[360px]">
+            {isDenied
+              ? "It looks like access was blocked. To practice, you need to allow both your camera and microphone in your browser settings."
+              : "KiraPrep needs access to your camera and microphone to simulate the Kira assessment. Please allow both when your browser asks."}
+          </div>
+
+          {isDenied ? (
+            <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-5 text-left text-[13px] text-[#475569] leading-[1.7] w-full">
+              <p className="font-semibold text-[#0f172a] mb-2">How to fix this:</p>
+              <ol className="list-decimal list-inside space-y-1">
+                <li>Click the <strong>lock icon</strong> in your browser's address bar</li>
+                <li>Set <strong>Camera</strong> and <strong>Microphone</strong> to <strong>Allow</strong></li>
+                <li>Refresh the page</li>
+              </ol>
+            </div>
+          ) : (
+            <button
+              onClick={() => {
+                setPermState("pending");
+                navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+                  .then((stream) => {
+                    const hasAudio = stream.getAudioTracks().length > 0;
+                    if (!hasAudio) { setPermState("no-audio"); return; }
+                    setPermState("granted");
+                    streamRef.current = stream;
+                    if (videoRef.current) videoRef.current.srcObject = stream;
+                  })
+                  .catch(() => setPermState("denied"));
+              }}
+              className="bg-brand text-white text-[15px] font-semibold py-3 px-8 rounded-lg border-none cursor-pointer hover:bg-[#1d4ed8] transition-colors"
+            >
+              Allow camera & microphone
+            </button>
+          )}
+
+          <p className="text-[12px] text-[#94a3b8]">
+            Your video is never uploaded or stored — it stays on your device.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   // End of Set screen
@@ -498,7 +580,7 @@ export default function PracticeScreen({
             </>
           ) : (
             /* Submitted screen */
-            <div className="flex flex-col items-center justify-center gap-4 py-[60px] px-[40px] text-center bg-white">
+            <div className="flex flex-col items-center gap-3 pt-[20px] pb-[32px] px-[40px] text-center bg-white">
               {/* Green check icon */}
               <div className="w-[60px] h-[60px] rounded-full bg-[#f0fdf4] border border-[#bbf7d0] flex items-center justify-center text-[26px] text-[#16a34a]">
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -523,8 +605,8 @@ export default function PracticeScreen({
               </ul>
 
               {/* Note */}
-              <div className="text-[12px] text-[#94a3b8] max-w-[400px] leading-[1.6] text-center">
-                <span className="font-semibold text-[#64748b]">Note:</span> In the real Kira assessment, playback is not available. The next question will only appear when you click Next question.
+              <div className="text-[13px] text-[#475569] max-w-[400px] leading-[1.6] text-center">
+                <span className="font-semibold">Note:</span> In the real Kira assessment, playback is not available. The next question will only appear when you click Next question.
               </div>
 
               {/* Video playback */}
