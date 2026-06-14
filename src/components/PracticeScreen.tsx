@@ -204,6 +204,7 @@ export default function PracticeScreen({
   }
 
   function goRecording() {
+    setRecordedUrl(null);
     setAppState("recording");
     setTotalSecs(school.answer_sec);
     setTimeLeft(school.answer_sec);
@@ -220,7 +221,12 @@ export default function PracticeScreen({
       recorder.ondataavailable = (e) => {
         if (e.data.size > 0) chunksRef.current.push(e.data);
       };
-      recorder.start(100); // collect in 100ms chunks
+      recorder.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: recorder.mimeType || "video/webm" });
+        const url = URL.createObjectURL(blob);
+        setRecordedUrl(url);
+      };
+      recorder.start(100);
       mediaRecorderRef.current = recorder;
     }
   }
@@ -228,14 +234,9 @@ export default function PracticeScreen({
   function goSubmitted() {
     if (timerRef.current) clearInterval(timerRef.current);
 
-    // Stop recording and build blob URL
+    // Stop recording — onstop handler is already set in goRecording
     const recorder = mediaRecorderRef.current;
     if (recorder && recorder.state !== "inactive") {
-      recorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: recorder.mimeType || "video/webm" });
-        const url = URL.createObjectURL(blob);
-        setRecordedUrl(url);
-      };
       recorder.stop();
     }
 
