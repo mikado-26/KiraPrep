@@ -20,9 +20,29 @@ export async function generateMetadata({
   const { slug } = await params;
   const school = getSchoolBySlug(slug);
   if (!school) return {};
+
+  const title = `${school.display_name} Kira Interview Questions 2026 — Practice Free | KiraPrep`;
+  const description = `Practice real ${school.display_name} Kira Talent video interview questions. Timed simulation with questions sourced from real applicants. Free to try.`;
+  const url = `https://kiraprep.com/${slug}`;
+
   return {
-    title: `${school.display_name} MBA Kira Questions 2026 — Practice Free | KiraPrep`,
-    description: `Practice real ${school.display_name} Kira video essay questions. Timed practice mode with 194+ questions sourced from Reddit and MBA applicants.`,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: "KiraPrep",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+    alternates: {
+      canonical: url,
+    },
   };
 }
 

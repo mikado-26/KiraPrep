@@ -24,6 +24,20 @@ export const metadata: Metadata = {
   verification: {
     google: "xZQP2JdzCIVla7hMYhoHaMOQJUqeq1zos6wneGFeid0",
   },
+  openGraph: {
+    title: "KiraPrep — Practice MBA Kira Video Interviews",
+    description:
+      "Practice real MBA Kira video essay questions with timed practice mode. 194+ questions for INSEAD, Kellogg, Oxford, and more.",
+    url: "https://kiraprep.com",
+    siteName: "KiraPrep",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "KiraPrep — Practice MBA Kira Video Interviews",
+    description:
+      "Practice real MBA Kira video essay questions with timed practice mode. 194+ questions for INSEAD, Kellogg, Oxford, and more.",
+  },
 };
 
 export default function RootLayout({
