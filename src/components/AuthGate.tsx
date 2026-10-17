@@ -2,20 +2,48 @@
 
 import { createClient } from "@/lib/supabase";
 
-export default function AuthGate() {
+export default function AuthGate({
+  nextPath,
+  onClose,
+}: {
+  /** Where to land after sign-in. Defaults to the current page. */
+  nextPath?: string;
+  /** If set, shows a close button and closes on backdrop click. */
+  onClose?: () => void;
+} = {}) {
   async function handleGoogleSignIn() {
     const supabase = createClient();
+    const next = nextPath ?? window.location.pathname;
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(window.location.pathname)}`,
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
       },
     });
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-2xl bg-white border border-[#e2e8f0] p-8 shadow-xl">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        className="relative w-full max-w-md rounded-2xl bg-white border border-[#e2e8f0] p-8 shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {onClose && (
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full text-[#94a3b8] hover:bg-[#f1f5f9] hover:text-[#475569] cursor-pointer"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          </button>
+        )}
         {/* Icon */}
         <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-[#eff6ff] border border-[#dbeafe]">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

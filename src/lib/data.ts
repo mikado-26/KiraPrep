@@ -8,6 +8,10 @@ export interface SchoolBase {
   display_name: string;
   slug: string;
   active: string;
+  /** Official name, used in intros and FAQ answers. */
+  full_name: string;
+  /** Other names applicants search for, e.g. "MIT MBA". */
+  aliases: string[];
 }
 
 /**

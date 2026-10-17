@@ -3,60 +3,108 @@
     "school_id": "insead",
     "display_name": "INSEAD",
     "slug": "insead-kira-questions",
-    "active": "yes"
+    "active": "yes",
+    "full_name": "INSEAD",
+    "aliases": [
+      "INSEAD MBA"
+    ]
   },
   {
     "school_id": "oxford-said",
     "display_name": "Oxford Said",
     "slug": "oxford-said-kira-questions",
-    "active": "yes"
+    "active": "yes",
+    "full_name": "Oxford Saïd Business School",
+    "aliases": [
+      "Oxford MBA",
+      "Saïd Business School"
+    ]
   },
   {
     "school_id": "foster",
     "display_name": "Foster",
     "slug": "foster-kira-questions",
-    "active": "yes"
+    "active": "yes",
+    "full_name": "UW Foster School of Business",
+    "aliases": [
+      "Foster MBA",
+      "University of Washington Foster"
+    ]
   },
   {
     "school_id": "iese",
     "display_name": "IESE",
     "slug": "iese-kira-questions",
-    "active": "yes"
+    "active": "yes",
+    "full_name": "IESE Business School",
+    "aliases": [
+      "IESE MBA"
+    ]
   },
   {
     "school_id": "kellogg",
     "display_name": "Kellogg",
     "slug": "kellogg-kira-questions",
-    "active": "yes"
+    "active": "yes",
+    "full_name": "Northwestern Kellogg School of Management",
+    "aliases": [
+      "Kellogg MBA",
+      "Northwestern MBA"
+    ]
   },
   {
     "school_id": "mit",
     "display_name": "MIT Sloan",
     "slug": "mit-sloan-kira-questions",
-    "active": "yes"
+    "active": "yes",
+    "full_name": "MIT Sloan School of Management",
+    "aliases": [
+      "MIT MBA",
+      "Sloan MBA"
+    ]
   },
   {
     "school_id": "yale",
     "display_name": "Yale SOM",
     "slug": "yale-som-kira-questions",
-    "active": "yes"
+    "active": "yes",
+    "full_name": "Yale School of Management",
+    "aliases": [
+      "Yale MBA",
+      "Yale SOM"
+    ]
   },
   {
     "school_id": "haas",
     "display_name": "Haas",
     "slug": "haas-kira-questions",
-    "active": "yes"
+    "active": "yes",
+    "full_name": "UC Berkeley Haas School of Business",
+    "aliases": [
+      "Berkeley Haas",
+      "Haas MBA"
+    ]
   },
   {
     "school_id": "mccombs",
     "display_name": "McCombs",
     "slug": "mccombs-kira-questions",
-    "active": "yes"
+    "active": "yes",
+    "full_name": "UT Austin McCombs School of Business",
+    "aliases": [
+      "Texas McCombs",
+      "McCombs MBA"
+    ]
   },
   {
     "school_id": "lbs",
     "display_name": "LBS",
     "slug": "lbs-kira-questions",
-    "active": "yes"
+    "active": "yes",
+    "full_name": "London Business School",
+    "aliases": [
+      "LBS MBA",
+      "London Business School MBA"
+    ]
   }
 ]
