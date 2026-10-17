@@ -5,22 +5,28 @@ import NavBar from "./NavBar";
 import AuthGate from "./AuthGate";
 import Paywall from "./Paywall";
 import { createClient } from "@/lib/supabase";
-import { showYearTag } from "@/lib/yearTag";
+import { showIntakeTag, intakeLabel } from "@/lib/yearTag";
 import type { User } from "@supabase/supabase-js";
 
 interface SchoolInfo {
   school_id: string;
   display_name: string;
   slug: string;
-  batch_size: number;
-  prep_sec: number;
-  answer_sec: number;
 }
 
 interface QuestionItem {
   id: number;
   text: string;
-  year?: number;
+}
+
+/** Questions of one intake plus that intake's Kira format. */
+export interface BatchInfo {
+  /** Intake year, or null when unknown. */
+  intake: number | null;
+  batch_size: number;
+  prep_sec: number;
+  answer_sec: number;
+  questions: QuestionItem[];
 }
 
 type AppState = "waiting" | "prep" | "recording" | "submitted" | "endofset";
@@ -40,12 +46,35 @@ function fmtLabel(s: number): string {
   return r ? `${m}m ${r}s` : `${m}m`;
 }
 
+function intakeKey(intake: number | null): string {
+  return intake === null ? "none" : String(intake);
+}
+
+/** True when the set starting at `ptr` reaches the end of the batch's questions. */
+function isExhausted(b: BatchInfo, ptr: number): boolean {
+  return ptr + b.batch_size >= b.questions.length;
+}
+
+/**
+ * An intake is fully practised once its last set is done. If questions are
+ * added to it later, its pointer is no longer at the end and it reopens.
+ */
+function isDone(
+  b: BatchInfo,
+  pointers: Record<string, number>,
+  done: Record<string, boolean>
+): boolean {
+  const key = intakeKey(b.intake);
+  return !!done[key] && isExhausted(b, pointers[key] ?? 0);
+}
+
 export default function PracticeScreen({
   school,
-  questions,
+  batches,
 }: {
   school: SchoolInfo;
-  questions: QuestionItem[];
+  /** Newest intake first; each set uses one batch, then moves to the next intake. */
+  batches: BatchInfo[];
 }) {
   const [mounted, setMounted] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -53,7 +82,11 @@ export default function PracticeScreen({
 
   const [appState, setAppState] = useState<AppState>("waiting");
   const [currentQ, setCurrentQ] = useState(0);
-  const [startIndex, setStartIndex] = useState(0);
+  // Which intake batch the current set comes from, and where each intake's
+  // questions are up to. Both persist so a returning user continues.
+  const [batchIdx, setBatchIdx] = useState(0);
+  const [pointers, setPointers] = useState<Record<string, number>>({});
+  const [done, setDone] = useState<Record<string, boolean>>({});
   const [setIndex, setSetIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
   const [totalSecs, setTotalSecs] = useState(0);
@@ -103,16 +136,38 @@ export default function PracticeScreen({
       setUser(session?.user ?? null);
     });
 
-    // Links from the school page add ?start=first to begin at the first batch.
+    const storedBatch = parseInt(
+      localStorage.getItem(`kiraprep_batch_${school.school_id}`) || "0",
+      10
+    );
+    // Links from the school page add ?start=first: begin at the newest intake's first question.
     const fromFirst =
       new URLSearchParams(window.location.search).get("start") === "first";
-    const storedIndex = fromFirst
-      ? 0
-      : parseInt(
-          localStorage.getItem(`kiraprep_nextqi_${school.school_id}`) || "0",
-          10
-        );
-    setStartIndex(storedIndex);
+    setBatchIdx(
+      fromFirst
+        ? 0
+        : Number.isFinite(storedBatch)
+          ? storedBatch % Math.max(batches.length, 1)
+          : 0
+    );
+    const storedPointers: Record<string, number> = {};
+    for (const b of batches) {
+      const key = intakeKey(b.intake);
+      const v = parseInt(
+        localStorage.getItem(`kiraprep_nextqi_${school.school_id}_${key}`) || "0",
+        10
+      );
+      storedPointers[key] = Number.isFinite(v) ? v % Math.max(b.questions.length, 1) : 0;
+    }
+    if (fromFirst && batches[0]) storedPointers[intakeKey(batches[0].intake)] = 0;
+    setPointers(storedPointers);
+    const storedDone: Record<string, boolean> = {};
+    for (const b of batches) {
+      const key = intakeKey(b.intake);
+      storedDone[key] =
+        localStorage.getItem(`kiraprep_done_${school.school_id}_${key}`) === "1";
+    }
+    setDone(storedDone);
 
     const used = parseInt(
       localStorage.getItem("kiraprep_questions_used") || "0",
@@ -121,7 +176,7 @@ export default function PracticeScreen({
     setQuestionsCompleted(used);
 
     return () => listener.subscription.unsubscribe();
-  }, [school.school_id]);
+  }, [school.school_id, batches]);
 
   // Start camera
   useEffect(() => {
@@ -196,13 +251,17 @@ export default function PracticeScreen({
     }
   }, [timeLeft, appState]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Current intake batch and where its questions are up to
+  const batch: BatchInfo = batches[batchIdx] ?? batches[0];
+  const startIndex = pointers[intakeKey(batch.intake)] ?? 0;
+
   // Get current set questions
   const getSetQuestions = useCallback((): QuestionItem[] => {
-    return Array.from({ length: school.batch_size }, (_, i) => {
-      const idx = (startIndex + i) % questions.length;
-      return questions[idx];
+    return Array.from({ length: batch.batch_size }, (_, i) => {
+      const idx = (startIndex + i) % batch.questions.length;
+      return batch.questions[idx];
     });
-  }, [startIndex, school.batch_size, questions]);
+  }, [startIndex, batch]);
 
   const setQs = getSetQuestions();
   const currentQuestion = setQs[currentQ];
@@ -213,15 +272,15 @@ export default function PracticeScreen({
 
   function goPrep() {
     setAppState("prep");
-    setTotalSecs(school.prep_sec);
-    setTimeLeft(school.prep_sec);
+    setTotalSecs(batch.prep_sec);
+    setTimeLeft(batch.prep_sec);
   }
 
   function goRecording() {
     setRecordedUrl(null);
     setAppState("recording");
-    setTotalSecs(school.answer_sec);
-    setTimeLeft(school.answer_sec);
+    setTotalSecs(batch.answer_sec);
+    setTimeLeft(batch.answer_sec);
 
     // Start recording
     if (streamRef.current) {
@@ -288,7 +347,7 @@ export default function PracticeScreen({
     } else if (appState === "recording") {
       goSubmitted();
     } else if (appState === "submitted") {
-      const isLast = currentQ >= school.batch_size - 1;
+      const isLast = currentQ >= batch.batch_size - 1;
       if (isLast) {
         goEndOfSet();
       } else {
@@ -299,12 +358,33 @@ export default function PracticeScreen({
   }
 
   function newSet() {
-    const nextStart = (startIndex + school.batch_size) % questions.length;
-    setStartIndex(nextStart);
-    localStorage.setItem(
-      `kiraprep_nextqi_${school.school_id}`,
-      nextStart.toString()
-    );
+    const key = intakeKey(batch.intake);
+    const nextPointers = { ...pointers };
+    const nextDone = { ...done };
+    if (isExhausted(batch, startIndex)) {
+      // That was this intake's last new set: mark it practised, keep pointer.
+      nextDone[key] = true;
+      localStorage.setItem(`kiraprep_done_${school.school_id}_${key}`, "1");
+    } else {
+      nextPointers[key] = startIndex + batch.batch_size;
+      localStorage.setItem(
+        `kiraprep_nextqi_${school.school_id}_${key}`,
+        nextPointers[key].toString()
+      );
+    }
+    // Next intake (cycling, newest first) that still has new questions.
+    let nextIdx = batchIdx;
+    for (let step = 1; step <= batches.length; step++) {
+      const i = (batchIdx + step) % batches.length;
+      if (!isDone(batches[i], nextPointers, nextDone)) {
+        nextIdx = i;
+        break;
+      }
+    }
+    setPointers(nextPointers);
+    setDone(nextDone);
+    setBatchIdx(nextIdx);
+    localStorage.setItem(`kiraprep_batch_${school.school_id}`, nextIdx.toString());
     setSetIndex((s) => s + 1);
     setCurrentQ(0);
     setAppState("waiting");
@@ -328,11 +408,13 @@ export default function PracticeScreen({
   const progressPct =
     totalSecs > 0 ? ((totalSecs - timeLeft) / totalSecs) * 100 : 0;
 
+  // Finishing this set uses up every intake: nothing new left to practise.
   const willWrap =
-    startIndex + school.batch_size >= questions.length;
+    isExhausted(batch, startIndex) &&
+    batches.every((b, i) => i === batchIdx || isDone(b, pointers, done));
 
   const estimatedMinutes = Math.round(
-    (school.batch_size * (school.prep_sec + school.answer_sec)) / 60
+    (batch.batch_size * (batch.prep_sec + batch.answer_sec)) / 60
   );
 
   // Loading
@@ -436,13 +518,14 @@ export default function PracticeScreen({
             Set complete!
           </div>
           <div className="text-[15px] text-[#64748b] max-w-[380px] leading-[1.65]">
-            You completed {school.batch_size} {school.display_name} questions.
+            You completed {batch.batch_size} {school.display_name}
+            {batch.intake !== null ? ` ${intakeLabel(batch.intake)}` : ""} questions.
             Great work — the more you practice, the more natural it feels.
           </div>
           {/* Stats */}
           <div className="flex gap-3">
             <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl py-[14px] px-6 text-center min-w-[100px]">
-              <div className="text-[22px] font-bold text-[#0f172a]">{school.batch_size}</div>
+              <div className="text-[22px] font-bold text-[#0f172a]">{batch.batch_size}</div>
               <div className="text-[11px] text-[#94a3b8] mt-[3px] uppercase tracking-[0.06em]">Questions</div>
             </div>
             <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl py-[14px] px-6 text-center min-w-[100px]">
@@ -611,9 +694,9 @@ export default function PracticeScreen({
                   <p className="text-[15px] text-[#1e293b] leading-[1.65] flex items-baseline gap-2 flex-wrap">
                     <span className="flex items-center gap-[6px] shrink-0">
                       <strong className="text-[#64748b] font-medium">Q{currentQ + 1}.</strong>
-                      {showYearTag(currentQuestion.year) && (
+                      {showIntakeTag(batch.intake) && (
                         <span className="text-[11px] font-medium text-[#64748b] bg-[#f1f5f9] border border-[#e2e8f0] rounded px-[7px] py-[1px] leading-[1.6]">
-                          {currentQuestion.year} cycle
+                          {intakeLabel(batch.intake)}
                         </span>
                       )}
                     </span>
@@ -675,9 +758,12 @@ export default function PracticeScreen({
         <div className="border-l border-[#e8edf2] min-h-[400px]">
           <div className="px-5 pt-4 pb-[10px] text-[13px] font-semibold text-[#334155]">
             Practice
+            {batch.intake !== null && (
+              <span className="font-normal text-[#64748b]"> · {intakeLabel(batch.intake)}</span>
+            )}
           </div>
           <div className="px-[10px] pb-[10px] flex flex-col gap-[2px]">
-            {Array.from({ length: school.batch_size }).map((_, i) => {
+            {Array.from({ length: batch.batch_size }).map((_, i) => {
               const done = i < currentQ || (i === currentQ && appState === "submitted");
               const active = i === currentQ && appState !== "submitted";
               return (
@@ -732,7 +818,7 @@ export default function PracticeScreen({
           <div className="w-px h-8 bg-[#e8edf2]" />
           <div>
             <div className="text-[18px] font-bold text-[#0f172a]">
-              {fmtLabel(school.prep_sec)}
+              {fmtLabel(batch.prep_sec)}
             </div>
             <div className="text-[10px] font-semibold tracking-[0.08em] uppercase text-[#94a3b8] mt-[2px]">
               Preparation
@@ -741,7 +827,7 @@ export default function PracticeScreen({
           <div className="w-px h-8 bg-[#e8edf2]" />
           <div>
             <div className="text-[18px] font-bold text-[#0f172a]">
-              {fmtLabel(school.answer_sec)}
+              {fmtLabel(batch.answer_sec)}
             </div>
             <div className="text-[10px] font-semibold tracking-[0.08em] uppercase text-[#94a3b8] mt-[2px]">
               Response
@@ -757,7 +843,7 @@ export default function PracticeScreen({
                   ? "Start question"
                   : appState === "recording"
                   ? "Submit"
-                  : appState === "submitted" && currentQ >= school.batch_size - 1
+                  : appState === "submitted" && currentQ >= batch.batch_size - 1
                   ? "Finish set"
                   : "Start question"}
               </button>

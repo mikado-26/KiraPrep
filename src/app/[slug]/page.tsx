@@ -6,10 +6,10 @@ import {
   getSchoolBySlug,
   getQuestionsBySchoolSorted,
   questions as allQuestions,
+  INTAKE_CUTOFF_MONTH,
   type School,
 } from "@/lib/data";
 import { summarizeThemes, themePhrase } from "@/lib/themes";
-import { CURRENT_INTAKE } from "@/lib/cycle";
 import NavBar from "@/components/NavBar";
 
 // Re-render once a day so the year in titles and headings rolls over on its own.
@@ -22,6 +22,12 @@ export function generateStaticParams() {
 /** Always the current calendar year, whatever year questions were reported. */
 function currentYear() {
   return new Date().getFullYear();
+}
+
+/** The intake applicants are applying for right now (from August: next year's). */
+function currentIntake() {
+  const now = new Date();
+  return now.getMonth() + 1 >= INTAKE_CUTOFF_MONTH ? now.getFullYear() + 1 : now.getFullYear();
 }
 
 const VISIBLE = 3; // questions shown in full
@@ -243,7 +249,7 @@ export default async function SchoolPage({
             {`${name} Kira questions (updated ${year})`}
           </h2>
           <p className="text-[13px] text-[#94a3b8] mt-1 mb-5">
-            {CURRENT_INTAKE} intake · {plural(questions.length, "question")} reported by applicants
+            {currentIntake()} intake · {plural(questions.length, "question")} reported by applicants
           </p>
           <ol className="flex flex-col gap-3">
             {shown.slice(0, VISIBLE).map((q, i) => (
