@@ -6,8 +6,9 @@ import {
   getSchoolBySlug,
   getQuestionsBySchool,
   getQuestionsBySchoolSorted,
+  getIntake,
 } from "@/lib/data";
-import { showYearTag } from "@/lib/yearTag";
+import { showIntakeTag, intakeLabel } from "@/lib/yearTag";
 import NavBar from "@/components/NavBar";
 
 export function generateStaticParams() {
@@ -24,10 +25,14 @@ export async function generateMetadata({
   if (!school) return {};
 
   const qs = getQuestionsBySchool(school.school_id);
-  const years = qs.map((q) => q.year);
-  const minY = Math.min(...years);
-  const maxY = Math.max(...years);
-  const yearRange = years.length ? (minY === maxY ? `${maxY}` : `${minY}–${maxY}`) : "";
+  const intakes = qs.map(getIntake).filter((y): y is number => y !== undefined);
+  const minY = Math.min(...intakes);
+  const maxY = Math.max(...intakes);
+  const yearRange = intakes.length
+    ? minY === maxY
+      ? `${maxY} intake`
+      : `${minY}–${maxY} intakes`
+    : "";
   const title = `${school.display_name} Kira Interview Questions 2026 — Free Practice | KiraPrep`;
   const description = `Practice ${qs.length} real ${school.display_name} Kira questions${yearRange ? ` (${yearRange})` : ""}. Same countdown timer, camera format, and pressure as the actual interview. Sourced from Reddit and MBA applicants.`;
   const url = `https://kiraprep.com/${slug}`;
@@ -127,7 +132,7 @@ export default async function SchoolPage({
             {fmtTime(school.answer_sec)} response
           </span>
           <span className="bg-[#f8fafc] border border-[#e2e8f0] text-[#64748b] text-[13px] font-medium rounded-full px-4 py-[5px]">
-            {school.format_year} format
+            {intakeLabel(school.format_intake)} format
           </span>
         </div>
 
@@ -161,8 +166,10 @@ export default async function SchoolPage({
                         {q.category && (
                           <span className="text-[12px] text-[#94a3b8]">{q.category}</span>
                         )}
-                        {showYearTag(q.year) && (
-                          <span className="text-[12px] text-[#94a3b8]">· {q.year}</span>
+                        {showIntakeTag(getIntake(q)) && (
+                          <span className="text-[12px] text-[#94a3b8]">
+                            · {intakeLabel(getIntake(q)!)}
+                          </span>
                         )}
                       </div>
                     </>
@@ -205,7 +212,7 @@ export default async function SchoolPage({
             How to Prepare for {school.display_name} Kira
           </h2>
           <p className="mt-4 text-[14px] text-[#64748b] leading-[1.75]">
-            In the {school.format_year} cycle, the {school.display_name} Kira assessment presented {school.batch_size} video
+            For the {school.format_intake} intake, the {school.display_name} Kira assessment presents {school.batch_size} video
             questions per session, with {fmtTime(school.prep_sec)} to prepare and{" "}
             {fmtTime(school.answer_sec)} to record each answer. Practice under these
             exact conditions with KiraPrep to build confidence and improve your responses

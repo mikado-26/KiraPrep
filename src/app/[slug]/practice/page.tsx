@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import {
   getActiveSchools,
   getSchoolBySlug,
-  getQuestionsBySchoolSorted,
+  getPracticeBatches,
 } from "@/lib/data";
 import PracticeScreen from "@/components/PracticeScreen";
 
@@ -35,7 +35,9 @@ export default async function PracticePage({
   const school = getSchoolBySlug(slug);
   if (!school) notFound();
 
-  const questions = getQuestionsBySchoolSorted(school.school_id);
+  // Newest intake first, each with that intake's own Kira format.
+  const batches = getPracticeBatches(school.school_id);
+  if (batches.length === 0) notFound();
 
   return (
     <PracticeScreen
@@ -43,11 +45,8 @@ export default async function PracticePage({
         school_id: school.school_id,
         display_name: school.display_name,
         slug: school.slug,
-        batch_size: school.batch_size,
-        prep_sec: school.prep_sec,
-        answer_sec: school.answer_sec,
       }}
-      questions={questions.map((q) => ({ id: q.id, text: q.text, year: q.year }))}
+      batches={batches}
     />
   );
 }
