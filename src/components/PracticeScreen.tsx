@@ -103,10 +103,15 @@ export default function PracticeScreen({
       setUser(session?.user ?? null);
     });
 
-    const storedIndex = parseInt(
-      localStorage.getItem(`kiraprep_nextqi_${school.school_id}`) || "0",
-      10
-    );
+    // Links from the school page add ?start=first to begin at the first batch.
+    const fromFirst =
+      new URLSearchParams(window.location.search).get("start") === "first";
+    const storedIndex = fromFirst
+      ? 0
+      : parseInt(
+          localStorage.getItem(`kiraprep_nextqi_${school.school_id}`) || "0",
+          10
+        );
     setStartIndex(storedIndex);
 
     const used = parseInt(

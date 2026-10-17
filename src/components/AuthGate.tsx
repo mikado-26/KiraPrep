@@ -13,7 +13,7 @@ export default function AuthGate({
 } = {}) {
   async function handleGoogleSignIn() {
     const supabase = createClient();
-    const next = nextPath ?? window.location.pathname;
+    const next = nextPath ?? window.location.pathname + window.location.search;
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
