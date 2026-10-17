@@ -8,21 +8,33 @@ import FAQItem from "@/components/FAQItem";
 export const metadata: Metadata = {
   title: "Kira Interview Practice — Real MBA Questions 2026 | KiraPrep",
   description:
-    "Practice real Kira video questions from INSEAD, Kellogg, Harvard and more. Same countdown timer, camera format, and pressure as the actual interview. Free to start.",
+    "Practice real Kira video questions from INSEAD, Kellogg, Oxford and more. Same countdown timer, camera format, and pressure as the actual interview. Free to start.",
   openGraph: {
     title: "Kira Interview Practice — Real MBA Questions 2026 | KiraPrep",
     description:
-      "Practice real Kira video questions from INSEAD, Kellogg, Harvard and more. Same countdown timer, camera format, and pressure as the actual interview. Free to start.",
+      "Practice real Kira video questions from INSEAD, Kellogg, Oxford and more. Same countdown timer, camera format, and pressure as the actual interview. Free to start.",
     url: "https://kiraprep.com",
     siteName: "KiraPrep",
     type: "website",
+  },
+  alternates: {
+    canonical: "/",
   },
   twitter: {
     card: "summary_large_image",
     title: "Kira Interview Practice — Real MBA Questions 2026 | KiraPrep",
     description:
-      "Practice real Kira video questions from INSEAD, Kellogg, Harvard and more. Same countdown timer, camera format, and pressure as the actual interview. Free to start.",
+      "Practice real Kira video questions from INSEAD, Kellogg, Oxford and more. Same countdown timer, camera format, and pressure as the actual interview. Free to start.",
   },
+};
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "KiraPrep",
+  url: "https://kiraprep.com",
+  description:
+    "Practice real MBA Kira video interview questions with the same timer and camera format as the real assessment.",
 };
 
 const faqSchema = {
@@ -100,6 +112,10 @@ export default function HomePage() {
 
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+      />
       {/* FAQ JSON-LD */}
       <script
         type="application/ld+json"

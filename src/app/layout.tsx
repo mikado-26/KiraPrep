@@ -18,6 +18,7 @@ const dmSerif = DM_Serif_Display({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://kiraprep.com"),
   title: "KiraPrep — Practice MBA Kira Video Interviews",
   description:
     "Practice real MBA Kira video essay questions with timed practice mode. 194+ questions sourced from Reddit and MBA applicants for INSEAD, Kellogg, Oxford, and more.",

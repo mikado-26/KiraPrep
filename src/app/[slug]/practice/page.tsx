@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
   getActiveSchools,
@@ -8,6 +9,21 @@ import PracticeScreen from "@/components/PracticeScreen";
 
 export function generateStaticParams() {
   return getActiveSchools().map((s) => ({ slug: s.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const school = getSchoolBySlug(slug);
+  if (!school) return {};
+  return {
+    title: `Practice ${school.display_name} Kira Questions | KiraPrep`,
+    description: `Timed ${school.display_name} Kira video interview practice session.`,
+    robots: { index: false, follow: true },
+  };
 }
 
 export default async function PracticePage({

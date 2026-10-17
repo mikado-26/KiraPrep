@@ -1,4 +1,5 @@
 import { MetadataRoute } from "next";
+import { tips } from "@/lib/tips";
 
 const schools = [
   "insead-kira-questions",
@@ -31,5 +32,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     ...schoolUrls,
+    {
+      url: `${base}/tips`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    },
+    ...tips.map((t) => ({
+      url: `${base}/tips/${t.slug}`,
+      lastModified: new Date(t.dateModified),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
   ];
 }

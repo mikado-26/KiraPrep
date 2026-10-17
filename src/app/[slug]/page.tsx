@@ -21,8 +21,13 @@ export async function generateMetadata({
   const school = getSchoolBySlug(slug);
   if (!school) return {};
 
-  const title = `${school.display_name} Kira Interview Questions 2026 — Practice Free | KiraPrep`;
-  const description = `Practice real ${school.display_name} Kira Talent video interview questions. Timed simulation with questions sourced from real applicants. Free to try.`;
+  const qs = getQuestionsBySchool(school.school_id);
+  const years = qs.map((q) => q.year);
+  const minY = Math.min(...years);
+  const maxY = Math.max(...years);
+  const yearRange = years.length ? (minY === maxY ? `${maxY}` : `${minY}–${maxY}`) : "";
+  const title = `${school.display_name} Kira Interview Questions 2026 — Free Practice | KiraPrep`;
+  const description = `Practice ${qs.length} real ${school.display_name} Kira questions${yearRange ? ` (${yearRange})` : ""}. Same countdown timer, camera format, and pressure as the actual interview. Sourced from Reddit and MBA applicants.`;
   const url = `https://kiraprep.com/${slug}`;
 
   return {
@@ -65,8 +70,26 @@ export default async function SchoolPage({
     return r ? `${m}m ${r}s` : `${m}m`;
   }
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://kiraprep.com" },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: `${school.display_name} Kira Questions`,
+        item: `https://kiraprep.com/${slug}`,
+      },
+    ],
+  };
+
   return (
     <div className="bg-white min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <NavBar />
 
       <main className="max-w-[720px] mx-auto px-8 pt-10 pb-20">
@@ -83,7 +106,7 @@ export default async function SchoolPage({
 
         {/* Header */}
         <h1 className="font-[family-name:var(--font-dm-serif)] text-[34px] leading-[1.1] text-[#0f172a] mt-5 mb-2 tracking-[-0.5px]">
-          {school.display_name} Kira Questions
+          {school.display_name} Kira Video Interview Questions
         </h1>
         <p className="text-[15px] text-[#64748b] leading-[1.6]">
           Real questions from {school.display_name}&apos;s Kira video assessment,
@@ -188,6 +211,17 @@ export default async function SchoolPage({
             Reddit and MBA community forums. While we can&apos;t guarantee you&apos;ll
             see these exact questions, practicing with real school-specific questions is
             the best preparation strategy available.
+          </p>
+          <p className="mt-4 text-[14px] text-[#64748b] leading-[1.75]">
+            New to Kira? Read{" "}
+            <Link href="/tips/what-is-kira" className="text-brand font-medium hover:underline">
+              what the Kira assessment is and how it works
+            </Link>{" "}
+            and our{" "}
+            <Link href="/tips/how-to-prepare" className="text-brand font-medium hover:underline">
+              step-by-step guide to preparing for a Kira interview
+            </Link>
+            .
           </p>
         </section>
       </main>
