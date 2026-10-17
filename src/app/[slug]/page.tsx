@@ -41,6 +41,12 @@ function fmtLong(s: number) {
   return parts.join(" ");
 }
 
+/** Quote a question as a full sentence: "Text." (adds a full stop if it has none). */
+function quoted(text: string) {
+  const t = text.trim();
+  return `"${t}${/[.?!]$/.test(t) ? "" : "."}"`;
+}
+
 function plural(n: number, word: string) {
   return `${n} ${word}${n === 1 ? "" : "s"}`;
 }
@@ -80,8 +86,8 @@ function buildFaq(school: School, questions: Question[], formats: SchoolFormat[]
   items.push({
     q: `What are the ${name} Kira questions for the ${CURRENT_INTAKE} intake?`,
     a: current.length
-      ? `Applicants in the ${CURRENT_CYCLE_LABEL} cycle (${CURRENT_INTAKE} intake) have reported ${plural(current.length, `${name} Kira question`)} so far, including: "${current[0].text}" The full list is on this page, and we add new questions as applicants report them.`
-      : `We haven't collected ${CURRENT_CYCLE_LABEL} questions for ${name} yet. Questions from the ${latestYear ? cycleLabel(latestYear) : "previous"} cycle are the closest guide${questions[0] ? `, for example: "${questions[0].text}"` : "."} We add new questions as ${CURRENT_INTAKE}-intake applicants report them.`,
+      ? `Applicants in the ${CURRENT_CYCLE_LABEL} cycle (${CURRENT_INTAKE} intake) have reported ${plural(current.length, `${name} Kira question`)} so far, including: ${quoted(current[0].text)} The full list is on this page, and we add new questions as applicants report them.`
+      : `We haven't collected ${CURRENT_CYCLE_LABEL} questions for ${name} yet. Questions from the ${latestYear ? cycleLabel(latestYear) : "previous"} cycle are the closest guide${questions[0] ? `, for example: ${quoted(questions[0].text)}` : "."} We add new questions as ${CURRENT_INTAKE}-intake applicants report them.`,
   });
 
   items.push({
