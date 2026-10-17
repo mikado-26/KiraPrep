@@ -12,8 +12,6 @@ export interface SchoolBase {
   full_name: string;
   /** Other names applicants search for, e.g. "MIT MBA". */
   aliases: string[];
-  /** How long applicants have to finish Kira after getting the link, e.g. "72 hours". Optional. */
-  kira_deadline?: string;
 }
 
 /**

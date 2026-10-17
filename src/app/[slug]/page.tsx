@@ -5,8 +5,10 @@ import {
   getActiveSchools,
   getSchoolBySlug,
   getQuestionsBySchoolSorted,
+  questions as allQuestions,
   type School,
 } from "@/lib/data";
+import { summarizeThemes, themePhrase } from "@/lib/themes";
 import { CURRENT_INTAKE } from "@/lib/cycle";
 import NavBar from "@/components/NavBar";
 
@@ -56,7 +58,6 @@ function buildFaq(school: School) {
   const qs = plural(school.batch_size, "question");
   const one = school.batch_size === 1;
   const minutes = Math.ceil((school.batch_size * (school.prep_sec + school.answer_sec)) / 60);
-  const deadline = school.kira_deadline ? ` You usually have ${school.kira_deadline} to complete it.` : "";
 
   return [
     {
@@ -66,10 +67,6 @@ function buildFaq(school: School) {
     {
       q: `How long is the ${name} Kira assessment?`,
       a: `The ${name} Kira assessment has ${qs}, with ${prep} to prepare and ${answer} to answer${one ? "" : " each"}. That is about ${plural(minutes, "minute")} of timed questions, plus a short system check at the start.`,
-    },
-    {
-      q: `When do you complete the ${name} Kira interview?`,
-      a: `After you submit your application and pay the application fee, ${name} emails you a personal Kira link.${deadline} Complete it on your own computer before the deadline in that email. You start with a camera and microphone check and a practice question that is not sent to the school. ${one ? `Then you answer your real question: ${prep} to prepare and ${answer} to record, with no retake.` : `Then you answer your real ${qs} one by one: ${prep} to prepare and ${answer} to record each, with no retakes.`} When you finish, your answers go straight to the admissions committee.`,
     },
   ];
 }
@@ -113,6 +110,10 @@ export default async function SchoolPage({
   const latest = questions[0];
   const shown = questions.slice(0, VISIBLE + BLURRED);
   const faq = buildFaq(school);
+  const themes = summarizeThemes(
+    questions,
+    allQuestions.filter((q) => q.status === "active")
+  );
   // Every CTA starts the practice page at the first batch.
   const practiceHref = `/${school.slug}/practice?start=first`;
   const batch = Math.max(1, school.batch_size);
@@ -239,7 +240,7 @@ export default async function SchoolPage({
         {/* Questions: 3 in full, 3 blurred, then sign in */}
         <section className="mt-12">
           <h2 className={h2}>
-            {name} Kira questions {year}
+            {`${name} Kira questions (updated ${year})`}
           </h2>
           <p className="text-[13px] text-[#94a3b8] mt-1 mb-5">
             {CURRENT_INTAKE} intake · {plural(questions.length, "question")} reported by applicants
@@ -278,6 +279,36 @@ export default async function SchoolPage({
           )}
         </section>
 
+        {/* What this school asks: generated from its own questions */}
+        {themes.top.length > 0 && (
+          <section className="mt-14">
+            <h2 className={`${h2} mb-3`}>{`What ${name} asks in Kira`}</h2>
+            <p className="text-[15px] text-[#475569] leading-[1.7] mb-4">
+              {`Applicants have reported ${plural(questions.length, `${name} Kira question`)}. ${
+                themes.top.length === 1 ? "The most common theme is" : "The most common themes are"
+              } ${themes.top
+                .slice(0, 3)
+                .map((t) => themePhrase(t.name))
+                .join(", ")
+                .replace(/, ([^,]*)$/, themes.top.length > 2 ? ", and $1" : " and $1")}.`}
+              {themes.distinctive &&
+                ` Compared with the other schools we cover, ${name} asks noticeably more ${themePhrase(themes.distinctive)} questions.`}
+            </p>
+            <ul className="flex flex-col gap-3">
+              {themes.top.map((th) => (
+                <li key={th.name} className="border-l-2 border-brand-border-dark pl-4">
+                  <div className="text-[14px] font-semibold text-[#0f172a]">
+                    {th.name} <span className="font-normal text-[#94a3b8]">· {plural(th.count, "question")}</span>
+                  </div>
+                  <p className="text-[14px] text-[#475569] leading-[1.6] mt-1">
+                    {`e.g. "${th.example}"`}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
         {/* FAQ */}
         <section className="mt-14">
           <h2 className={`${h2} mb-4`}>
@@ -291,6 +322,19 @@ export default async function SchoolPage({
                   <span className="text-brand text-[18px] leading-none transition-transform group-open:rotate-45" aria-hidden>+</span>
                 </summary>
                 <p className="mt-3 text-[14px] text-[#475569] leading-[1.7]">{f.a}</p>
+                {i === 0 && (
+                  <p className="mt-2 text-[14px] text-[#475569] leading-[1.7]">
+                    Read more about{" "}
+                    <Link href="/tips/what-is-kira" className="text-brand font-medium hover:underline">
+                      how the Kira assessment works
+                    </Link>{" "}
+                    and{" "}
+                    <Link href="/tips/how-to-prepare" className="text-brand font-medium hover:underline">
+                      how to prepare for a Kira interview
+                    </Link>
+                    .
+                  </p>
+                )}
               </details>
             ))}
           </div>
