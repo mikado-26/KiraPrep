@@ -5,6 +5,7 @@ import NavBar from "./NavBar";
 import AuthGate from "./AuthGate";
 import Paywall from "./Paywall";
 import { createClient } from "@/lib/supabase";
+import { showYearTag } from "@/lib/yearTag";
 import type { User } from "@supabase/supabase-js";
 
 interface SchoolInfo {
@@ -605,7 +606,7 @@ export default function PracticeScreen({
                   <p className="text-[15px] text-[#1e293b] leading-[1.65] flex items-baseline gap-2 flex-wrap">
                     <span className="flex items-center gap-[6px] shrink-0">
                       <strong className="text-[#64748b] font-medium">Q{currentQ + 1}.</strong>
-                      {currentQuestion.year && (
+                      {showYearTag(currentQuestion.year) && (
                         <span className="text-[11px] font-medium text-[#64748b] bg-[#f1f5f9] border border-[#e2e8f0] rounded px-[7px] py-[1px] leading-[1.6]">
                           {currentQuestion.year} cycle
                         </span>

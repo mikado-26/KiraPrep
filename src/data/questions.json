@@ -1938,5 +1938,65 @@
     "source": "reddit",
     "source_url": "",
     "status": "active"
+  },
+  {
+    "id": 195,
+    "school_id": "mccombs",
+    "text": "Introduce yourself, focusing only on your life outside of work.",
+    "category": "Introduction / Self-Awareness",
+    "year": 2026,
+    "source": "reddit",
+    "source_url": "",
+    "status": "active"
+  },
+  {
+    "id": 196,
+    "school_id": "mccombs",
+    "text": "Tell us about a group project where someone wasn't getting a chance to speak. What did you do, and how did they react?",
+    "category": "Behavioral / Leadership / Collaboration",
+    "year": 2026,
+    "source": "reddit",
+    "source_url": "",
+    "status": "active"
+  },
+  {
+    "id": 197,
+    "school_id": "mccombs",
+    "text": "Describe a setback you pushed through. What kept you going?",
+    "category": "Behavioral / Leadership / Collaboration",
+    "year": 2026,
+    "source": "reddit",
+    "source_url": "",
+    "status": "active"
+  },
+  {
+    "id": 198,
+    "school_id": "mccombs",
+    "text": "Tell us about an ambitious goal you set. Why did you set it, and how did you go after it?",
+    "category": "Motivation & Vision",
+    "year": 2026,
+    "source": "reddit",
+    "source_url": "",
+    "status": "active"
+  },
+  {
+    "id": 199,
+    "school_id": "mccombs",
+    "text": "A teammate is struggling with a task that doesn't play to their strengths, but roles have already been assigned. What would you do?",
+    "category": "Critical Thinking / Problem Solving",
+    "year": 2026,
+    "source": "reddit",
+    "source_url": "",
+    "status": "active"
+  },
+  {
+    "id": 200,
+    "school_id": "mccombs",
+    "text": "What are your post-MBA goals, and what are your backup paths if your plan doesn't work out?",
+    "category": "Motivation & Vision",
+    "year": 2026,
+    "source": "reddit",
+    "source_url": "",
+    "status": "active"
   }
 ]

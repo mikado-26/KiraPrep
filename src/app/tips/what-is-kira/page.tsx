@@ -76,6 +76,7 @@ export default function WhatIsKira() {
               <th className="font-semibold px-4 py-3">Video questions</th>
               <th className="font-semibold px-4 py-3">Prep time</th>
               <th className="font-semibold px-4 py-3">Answer time</th>
+              <th className="font-semibold px-4 py-3">Cycle</th>
             </tr>
           </thead>
           <tbody className="text-[#475569]">
@@ -89,6 +90,7 @@ export default function WhatIsKira() {
                 <td className="px-4 py-3">{s.batch_size}</td>
                 <td className="px-4 py-3 whitespace-nowrap">{fmt(s.prep_sec)}</td>
                 <td className="px-4 py-3 whitespace-nowrap">{fmt(s.answer_sec)}</td>
+                <td className="px-4 py-3">{s.format_year}</td>
               </tr>
             ))}
           </tbody>

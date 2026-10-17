@@ -1,0 +1,90 @@
+[
+  {
+    "school_id": "insead",
+    "year": 2025,
+    "batch_size": 4,
+    "prep_sec": 30,
+    "answer_sec": 90,
+    "source": "reddit"
+  },
+  {
+    "school_id": "oxford-said",
+    "year": 2025,
+    "batch_size": 4,
+    "prep_sec": 30,
+    "answer_sec": 90,
+    "source": "reddit"
+  },
+  {
+    "school_id": "foster",
+    "year": 2025,
+    "batch_size": 2,
+    "prep_sec": 30,
+    "answer_sec": 90,
+    "source": "reddit"
+  },
+  {
+    "school_id": "iese",
+    "year": 2025,
+    "batch_size": 4,
+    "prep_sec": 60,
+    "answer_sec": 90,
+    "source": "reddit"
+  },
+  {
+    "school_id": "kellogg",
+    "year": 2025,
+    "batch_size": 3,
+    "prep_sec": 60,
+    "answer_sec": 90,
+    "source": "reddit"
+  },
+  {
+    "school_id": "mit",
+    "year": 2025,
+    "batch_size": 1,
+    "prep_sec": 10,
+    "answer_sec": 60,
+    "source": "reddit"
+  },
+  {
+    "school_id": "yale",
+    "year": 2025,
+    "batch_size": 3,
+    "prep_sec": 30,
+    "answer_sec": 90,
+    "source": "reddit"
+  },
+  {
+    "school_id": "haas",
+    "year": 2025,
+    "batch_size": 5,
+    "prep_sec": 45,
+    "answer_sec": 180,
+    "source": "reddit"
+  },
+  {
+    "school_id": "mccombs",
+    "year": 2025,
+    "batch_size": 5,
+    "prep_sec": 30,
+    "answer_sec": 180,
+    "source": "reddit"
+  },
+  {
+    "school_id": "lbs",
+    "year": 2025,
+    "batch_size": 2,
+    "prep_sec": 45,
+    "answer_sec": 90,
+    "source": "reddit"
+  },
+  {
+    "school_id": "mccombs",
+    "year": 2026,
+    "batch_size": 6,
+    "prep_sec": 10,
+    "answer_sec": 90,
+    "source": "reddit"
+  }
+]

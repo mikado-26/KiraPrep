@@ -5,7 +5,9 @@ import {
   getActiveSchools,
   getSchoolBySlug,
   getQuestionsBySchool,
+  getQuestionsBySchoolSorted,
 } from "@/lib/data";
+import { showYearTag } from "@/lib/yearTag";
 import NavBar from "@/components/NavBar";
 
 export function generateStaticParams() {
@@ -60,7 +62,7 @@ export default async function SchoolPage({
   const school = getSchoolBySlug(slug);
   if (!school) notFound();
 
-  const questions = getQuestionsBySchool(school.school_id);
+  const questions = getQuestionsBySchoolSorted(school.school_id);
   const visibleCount = 3;
 
   function fmtTime(s: number) {
@@ -124,6 +126,9 @@ export default async function SchoolPage({
           <span className="bg-brand-light border border-brand-border text-brand text-[13px] font-medium rounded-full px-4 py-[5px]">
             {fmtTime(school.answer_sec)} response
           </span>
+          <span className="bg-[#f8fafc] border border-[#e2e8f0] text-[#64748b] text-[13px] font-medium rounded-full px-4 py-[5px]">
+            {school.format_year} format
+          </span>
         </div>
 
         {/* CTA */}
@@ -156,7 +161,7 @@ export default async function SchoolPage({
                         {q.category && (
                           <span className="text-[12px] text-[#94a3b8]">{q.category}</span>
                         )}
-                        {q.year && (
+                        {showYearTag(q.year) && (
                           <span className="text-[12px] text-[#94a3b8]">· {q.year}</span>
                         )}
                       </div>
@@ -200,8 +205,8 @@ export default async function SchoolPage({
             How to Prepare for {school.display_name} Kira
           </h2>
           <p className="mt-4 text-[14px] text-[#64748b] leading-[1.75]">
-            The {school.display_name} Kira assessment presents {school.batch_size} video
-            questions per session. You get {fmtTime(school.prep_sec)} to prepare and{" "}
+            In the {school.format_year} cycle, the {school.display_name} Kira assessment presented {school.batch_size} video
+            questions per session, with {fmtTime(school.prep_sec)} to prepare and{" "}
             {fmtTime(school.answer_sec)} to record each answer. Practice under these
             exact conditions with KiraPrep to build confidence and improve your responses
             before the real assessment.

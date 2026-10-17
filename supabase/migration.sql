@@ -17,6 +17,16 @@ CREATE TABLE IF NOT EXISTS schools (
   active       BOOLEAN NOT NULL DEFAULT true
 );
 
+CREATE TABLE IF NOT EXISTS school_formats (
+  school_id   TEXT NOT NULL REFERENCES schools(school_id),
+  year        INT  NOT NULL,
+  batch_size  INT  NOT NULL,
+  prep_sec    INT  NOT NULL,
+  answer_sec  INT  NOT NULL,
+  source      TEXT,
+  PRIMARY KEY (school_id, year)
+);
+
 CREATE TABLE IF NOT EXISTS questions (
   id          INT  PRIMARY KEY,
   school_id   TEXT NOT NULL REFERENCES schools(school_id),
@@ -42,6 +52,7 @@ CREATE TABLE IF NOT EXISTS practice_activities (
 
 ALTER TABLE schools            ENABLE ROW LEVEL SECURITY;
 ALTER TABLE questions          ENABLE ROW LEVEL SECURITY;
+ALTER TABLE school_formats     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE practice_activities ENABLE ROW LEVEL SECURITY;
 
 -- Schools and questions are publicly readable (no auth required)
@@ -50,6 +61,9 @@ CREATE POLICY "schools_public_read"
 
 CREATE POLICY "questions_public_read"
   ON questions FOR SELECT USING (true);
+
+CREATE POLICY "school_formats_public_read"
+  ON school_formats FOR SELECT USING (true);
 
 -- Users can only access their own practice activity rows
 CREATE POLICY "practice_activities_select"
@@ -80,6 +94,25 @@ INSERT INTO schools (school_id, display_name, slug, batch_size, prep_sec, answer
   ('mccombs',     'McCombs',     'mccombs-kira-questions',      5, 30, 180, true),
   ('lbs',         'LBS',         'lbs-kira-questions',          2, 45, 90,  true)
 ON CONFLICT (school_id) DO NOTHING;
+
+-- ------------------------------------------------------------
+-- 3b. SEED: school_formats (Kira format per school per cycle year;
+--     schools.batch_size/prep_sec/answer_sec are legacy, use this table)
+-- ------------------------------------------------------------
+
+INSERT INTO school_formats (school_id, year, batch_size, prep_sec, answer_sec, source) VALUES
+  ('insead', 2025, 4, 30, 90, 'reddit'),
+  ('oxford-said', 2025, 4, 30, 90, 'reddit'),
+  ('foster', 2025, 2, 30, 90, 'reddit'),
+  ('iese', 2025, 4, 60, 90, 'reddit'),
+  ('kellogg', 2025, 3, 60, 90, 'reddit'),
+  ('mit', 2025, 1, 10, 60, 'reddit'),
+  ('yale', 2025, 3, 30, 90, 'reddit'),
+  ('haas', 2025, 5, 45, 180, 'reddit'),
+  ('mccombs', 2025, 5, 30, 180, 'reddit'),
+  ('lbs', 2025, 2, 45, 90, 'reddit'),
+  ('mccombs', 2026, 6, 10, 90, 'reddit')
+ON CONFLICT (school_id, year) DO NOTHING;
 
 -- ------------------------------------------------------------
 -- 4. SEED: questions
