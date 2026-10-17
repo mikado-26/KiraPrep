@@ -163,10 +163,7 @@ export default async function SchoolPage({
           {name} MBA Kira Interview Questions {year}
         </h1>
         <p className="text-[15px] text-[#64748b] leading-[1.65] mb-6">
-          {`The ${name} Kira video interview has become a crucial part of your MBA application: `}
-          it&apos;s your one chance to show who you are as a person before the interview round.
-          Practice with real questions reported by applicants, with the same countdown timer,
-          camera format and pressure as the actual Kira. So when it counts, you don&apos;t freeze.
+          {`The ${name} Kira video interview is your one chance to show who you are as a person before the interview round. Practice with real questions reported by applicants, with the same countdown timer, camera format and pressure as the actual Kira.`}
         </p>
 
         {/* Kira-style preview with the latest reported question */}
