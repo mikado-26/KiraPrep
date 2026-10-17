@@ -47,7 +47,7 @@ export default async function PracticePage({
         prep_sec: school.prep_sec,
         answer_sec: school.answer_sec,
       }}
-      questions={questions.map((q) => ({ id: q.id, text: q.text }))}
+      questions={questions.map((q) => ({ id: q.id, text: q.text, year: q.year }))}
     />
   );
 }
